@@ -94,7 +94,7 @@ th {background:#dff9fb;}
 </section>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyiXwJQEtwW27tiuH-4v07d5BY4s1dkfZ2NFX23fDdQYsPAdtUF_cUTypq8THGchN0/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxW85sFd0N57EfNguL7a4cAmI7sRVpw2nSShZsVNfdRaK6zIAd088WSDpchNljT_BbB/exec";
 
 function showSection(id){
 document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));
@@ -115,13 +115,19 @@ return;
 }
 
 fetch(SCRIPT_URL,{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify(data)
-});
-
-crm_table.innerHTML += `<tr><td>${data.service}</td><td>${data.objet}</td><td>${data.statut}</td></tr>`;
-updateStats();
+ method:"POST",
+  headers:{"Content-Type":"application/json"},
+  body:JSON.stringify(data)
+})
+.then(res => res.json())
+.then(r => {
+  if(r.success){
+    alert("Demande enregistrée\nRéférence : " + r.reference);
+  } else {
+    alert("Erreur : " + r.message);
+  }
+})
+.catch(err => alert("Erreur serveur"));
 }
 
 function addMission(){
