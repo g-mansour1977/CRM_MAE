@@ -2,10 +2,13 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>Prototype MAE – CRM, Missions & Tableau de Bord</title>
+  <title>Mini Prototype MAE – CRM & Gestion des Missions</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <!-- Librairies -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
   <style>
     body {font-family: Arial, sans-serif; background:#f4f6f9; margin:0;}
     header {background:#0a3d62; color:#fff; padding:15px; text-align:center;}
@@ -15,130 +18,167 @@
     section {display:none; padding:20px;}
     section.active {display:block;}
     .card {background:#fff; padding:15px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.1); margin-bottom:15px;}
-    input, select, textarea {width:100%; padding:8px; margin-top:5px; margin-bottom:10px;}
+    input, select, textarea {width:100%; padding:8px; margin-bottom:10px;}
     button.action {background:#0a3d62; color:#fff; padding:10px; border:none; border-radius:5px; cursor:pointer; margin-right:5px;}
     table {width:100%; border-collapse:collapse;}
     th, td {border:1px solid #ccc; padding:8px;}
     th {background:#dff9fb;}
   </style>
 </head>
+
 <body>
 
 <header>
   <h2>RÉPUBLIQUE DU SÉNÉGAL</h2>
   <p>Un Peuple – Un But – Une Foi</p>
-  <hr style="border:1px solid #fff; width:60%">
   <h3>MINISTÈRE DES AFFAIRES ÉTRANGÈRES</h3>
-  <p><strong>Direction de l’Administration Générale et de l’Équipement (DAGE)</strong></p>
-  <p style="font-size:14px">
-    Plateforme interne de gestion administrative – Prototype de démonstration
-  </p>
+  <p><strong>Prototype – CRM & Gestion Administrative</strong></p>
 </header>
 
 <nav>
-  <button onclick="showSection('crm')">CRM</button>
+  <button onclick="showSection('crm')">CRM Interne</button>
   <button onclick="showSection('missions')">Missions</button>
-  <button onclick="showSection('stats')">Tableau de bord</button>
+  <button onclick="showSection('demandes')">Demandes</button>
 </nav>
 
+<!-- CRM -->
 <section id="crm" class="active">
   <div class="card">
     <h3>📂 CRM Interne</h3>
-    <label>Direction / Service</label>
-    <input id="crm_service" placeholder="Direction / Service" />
-    <label>Objet de la demande</label>
-    <input id="crm_objet" placeholder="Objet de la demande" />
-    <label>Statut</label>
-    <select id="crm_statut"><option>En cours</option><option>Traité</option><option>En attente</option></select>
-    <button class="action" onclick="addCRM()">Ajouter</button>
+    <input id="crm_service" placeholder="Direction / Service">
+    <input id="crm_objet" placeholder="Objet de la demande">
+    <select id="crm_statut">
+      <option>En cours</option>
+      <option>Traité</option>
+      <option>En attente</option>
+    </select>
+
+    <button class="action" onclick="addCRM()">Soumettre la demande</button>
     <button class="action" onclick="exportExcel('crm_table')">Exporter Excel</button>
     <button class="action" onclick="exportPDF('CRM Interne','crm_table')">PDF officiel</button>
   </div>
-  <table id="crm_table"><tr><th>Service</th><th>Objet</th><th>Statut</th></tr></table>
+
+  <table id="crm_table">
+    <tr><th>Service</th><th>Objet</th><th>Statut</th></tr>
+  </table>
 </section>
 
+<!-- MISSIONS -->
 <section id="missions">
   <div class="card">
     <h3>✈️ Gestion des Missions</h3>
-    <input id="m_nom" placeholder="Nom de l'agent" />
-    <input id="m_dest" placeholder="Destination" />
-    <input id="m_date" placeholder="Dates" />
-    <button class="action" onclick="addMission()">Ajouter</button>
+    <input id="m_nom" placeholder="Nom de l’agent">
+    <input id="m_matricule" placeholder="Matricule">
+    <input id="m_dest" placeholder="Destination">
+    <input id="m_date" placeholder="Dates (Du - Au)">
+    <select id="m_type">
+      <option>Ordre de mission</option>
+      <option>État de mission</option>
+    </select>
+
+    <button class="action" onclick="addMission()">Soumettre la mission</button>
     <button class="action" onclick="exportExcel('mission_table')">Exporter Excel</button>
-    <button class="action" onclick="exportPDF('Ordre / État de Mission','mission_table')">PDF officiel</button>
+    <button class="action" onclick="exportPDF('Missions','mission_table')">PDF officiel</button>
   </div>
-  <table id="mission_table"><tr><th>Agent</th><th>Destination</th><th>Dates</th><th>Ordre de Mission</th></tr></table>
+
+  <table id="mission_table">
+    <tr>
+      <th>Agent</th>
+      <th>Matricule</th>
+      <th>Destination</th>
+      <th>Dates</th>
+      <th>Type</th>
+    </tr>
+  </table>
 </section>
 
-<section id="stats">
+<!-- DEMANDES -->
+<section id="demandes">
   <div class="card">
-    <h3>📊 Tableau de bord</h3>
-    <p id="stat_crm"></p>
-    <p id="stat_mission"></p>
-  </div>
-</section>
+    <h3>📝 Demandes Administratives</h3>
+    <select id="d_type">
+      <option>Fournitures</option>
+      <option>Carburant</option>
+      <option>Bon de commande</option>
+    </select>
+    <textarea id="d_desc" placeholder="Description de la demande"></textarea>
 
+    <button class="action" onclick="addDemande()">Soumettre</button>
+  </div>
+
+  <table id="demande_table">
+    <tr><th>Type</th><th>Description</th></tr>
+  </table>
+</section>
 
 <script>
-
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby4JDzlNqGoADg1FJ8sKvklFbuNSwHsERsSQ0u6MU2cvxlOR7eB0EujjsOe2XhHH_LM/exec";
-
+/* Navigation */
 function showSection(id){
-document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));
-document.getElementById(id).classList.add("active");
-updateStats();
+  document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
 }
 
+/* CRM */
 function addCRM(){
-const data = {
-service: crm_service.value,
-objet: crm_objet.value,
-statut: crm_statut.value
-};
-
-if(!data.service || !data.objet){
-alert("Champs obligatoires manquants");
-return;
+  crm_table.innerHTML += `
+    <tr>
+      <td>${crm_service.value}</td>
+      <td>${crm_objet.value}</td>
+      <td>${crm_statut.value}</td>
+    </tr>`;
 }
 
-fetch(SCRIPT_URL,{
- method:"POST",
-  headers:{"Content-Type":"application/json"},
-  body:JSON.stringify(data)
-})
-.then(res => res.json())
-.then(r => {
-  if(r.success){
-    alert("Demande enregistrée\nRéférence : " + r.reference);
-  } else {
-    alert("Erreur : " + r.message);
-  }
-})
-.catch(err => alert("Erreur serveur"));
-}
-
+/* Missions */
 function addMission(){
-mission_table.innerHTML += `
-<tr>
-<td>${m_nom.value}</td>
-<td>${m_dest.value}</td>
-<td>${m_date.value}</td>
-<td>${m_type.value}</td>
-</tr>`;
-updateStats();
+  mission_table.innerHTML += `
+    <tr>
+      <td>${m_nom.value}</td>
+      <td>${m_matricule.value}</td>
+      <td>${m_dest.value}</td>
+      <td>${m_date.value}</td>
+      <td>${m_type.value}</td>
+    </tr>`;
 }
 
+/* Demandes */
+function addDemande(){
+  demande_table.innerHTML += `
+    <tr>
+      <td>${d_type.value}</td>
+      <td>${d_desc.value}</td>
+    </tr>`;
+}
 
-function showSection(id){document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');updateStats();}
+/* Export Excel */
+function exportExcel(tableId){
+  let wb = XLSX.utils.book_new();
+  let ws = XLSX.utils.table_to_sheet(document.getElementById(tableId));
+  XLSX.utils.book_append_sheet(wb, ws, "Données");
+  XLSX.writeFile(wb, tableId + ".xlsx");
+}
 
-function addCRM(){crm_table.innerHTML+=`<tr><td>${crm_service.value}</td><td>${crm_objet.value}</td><td>${crm_statut.value}</td></tr>`;updateStats();}
-function addMission(){mission_table.innerHTML+=`<tr><td>${m_nom.value}</td><td>${m_dest.value}</td><td>${m_date.value}</td></tr>`;updateStats();}
+/* Export PDF officiel */
+function exportPDF(title, tableId){
+  const { jsPDF } = window.jspdf;
+  let pdf = new jsPDF("l","mm","a4");
 
-function exportExcel(tableId){let wb=XLSX.utils.book_new();let ws=XLSX.utils.table_to_sheet(document.getElementById(tableId));XLSX.utils.book_append_sheet(wb,ws,"Données");XLSX.writeFile(wb,tableId+'.xlsx');}
+  pdf.setFontSize(14);
+  pdf.text("MINISTÈRE DES AFFAIRES ÉTRANGÈRES – SÉNÉGAL", 10, 15);
+  pdf.setFontSize(12);
+  pdf.text(title, 10, 25);
 
-function exportPDF(title,tableId){const {jsPDF}=window.jspdf;let pdf=new jsPDF();pdf.text(title,10,10);pdf.text('Ministère des Affaires Étrangères – Sénégal',10,18);let y=30;document.querySelectorAll(`#${tableId} tr`).forEach(r=>{let x=10;r.querySelectorAll('td,th').forEach(c=>{pdf.text(c.innerText,x,y);x+=60;});y+=8;});pdf.save(title+'.pdf');}
+  let y = 35;
+  document.querySelectorAll(`#${tableId} tr`).forEach(row=>{
+    let x = 10;
+    row.querySelectorAll("th,td").forEach(cell=>{
+      pdf.text(cell.innerText, x, y);
+      x += 40;
+    });
+    y += 8;
+  });
 
-function updateStats(){stat_crm.innerText="Nombre total de demandes CRM : "+(crm_table.rows.length-1);stat_mission.innerText="Nombre total de missions : "+(mission_table.rows.length-1);}
+  pdf.save(title + ".pdf");
+}
 </script>
 
 </body>
