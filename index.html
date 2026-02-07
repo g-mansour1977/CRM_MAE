@@ -4,11 +4,8 @@
   <meta charset="UTF-8" />
   <title>Mini Prototype MAE – CRM & Gestion des Missions</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- Librairies -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
     body {font-family: Arial, sans-serif; background:#f4f6f9; margin:0;}
     header {background:#0a3d62; color:#fff; padding:15px; text-align:center;}
@@ -18,167 +15,228 @@
     section {display:none; padding:20px;}
     section.active {display:block;}
     .card {background:#fff; padding:15px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.1); margin-bottom:15px;}
-    input, select, textarea {width:100%; padding:8px; margin-bottom:10px;}
-    button.action {background:#0a3d62; color:#fff; padding:10px; border:none; border-radius:5px; cursor:pointer; margin-right:5px;}
+    input, select, textarea {width:100%; padding:8px; margin-top:5px; margin-bottom:10px;}
+    button.action {background:#0a3d62; color:#fff; padding:10px; border:none; border-radius:5px; cursor:pointer;}
     table {width:100%; border-collapse:collapse;}
-    th, td {border:1px solid #ccc; padding:8px;}
+    th, td {border:1px solid #ccc; padding:8px; text-align:left;}
     th {background:#dff9fb;}
   </style>
 </head>
-
 <body>
 
 <header>
-  <h2>RÉPUBLIQUE DU SÉNÉGAL</h2>
-  <p>Un Peuple – Un But – Une Foi</p>
-  <h3>MINISTÈRE DES AFFAIRES ÉTRANGÈRES</h3>
-  <p><strong>Prototype – CRM & Gestion Administrative</strong></p>
+  <h2>Mini Prototype – MAE Sénégal</h2>
+  <p>CRM interne & Gestion des Missions (Démo)</p>
 </header>
 
 <nav>
   <button onclick="showSection('crm')">CRM Interne</button>
-  <button onclick="showSection('missions')">Missions</button>
-  <button onclick="showSection('demandes')">Demandes</button>
+  <button onclick="showSection('missions')">Gestion des Missions</button>
+  <button onclick="showSection('demandes')">Gestion des Demandes</button>
 </nav>
 
-<!-- CRM -->
 <section id="crm" class="active">
   <div class="card">
-    <h3>📂 CRM Interne</h3>
-    <input id="crm_service" placeholder="Direction / Service">
-    <input id="crm_objet" placeholder="Objet de la demande">
+    <h3>📂 CRM Interne – Directions</h3>
+    <label>Direction / Service</label>
+    <input id="crm_service" placeholder="Ex : Direction des Affaires Consulaires" />
+    <label>Objet de la demande</label>
+    <input id="crm_objet" placeholder="Ex : Demande de mission" />
+    <label>Statut</label>
     <select id="crm_statut">
       <option>En cours</option>
       <option>Traité</option>
       <option>En attente</option>
     </select>
-
-    <button class="action" onclick="addCRM()">Soumettre la demande</button>
+    <button class="action" onclick="addCRM()">Enregistrer</button>
     <button class="action" onclick="exportExcel('crm_table')">Exporter Excel</button>
     <button class="action" onclick="exportPDF('CRM Interne','crm_table')">PDF officiel</button>
   </div>
-
   <table id="crm_table">
     <tr><th>Service</th><th>Objet</th><th>Statut</th></tr>
   </table>
 </section>
 
-<!-- MISSIONS -->
 <section id="missions">
   <div class="card">
     <h3>✈️ Gestion des Missions</h3>
-    <input id="m_nom" placeholder="Nom de l’agent">
-    <input id="m_matricule" placeholder="Matricule">
-    <input id="m_dest" placeholder="Destination">
-    <input id="m_date" placeholder="Dates (Du - Au)">
+    <label>Nom de l'agent</label>
+    <input id="m_nom" />
+    <label>Matricule</label>
+    <input id="m_matricule">
+    <label>Destination</label>
+    <input id="m_dest" />
+    <label>Dates</label>
+    <input id="m_date" placeholder="Du - Au" />
+    <label>Type</label>
     <select id="m_type">
       <option>Ordre de mission</option>
       <option>État de mission</option>
     </select>
-
-    <button class="action" onclick="addMission()">Soumettre la mission</button>
+    <button class="action" onclick="addMission()">Ajouter Mission</button>
     <button class="action" onclick="exportExcel('mission_table')">Exporter Excel</button>
-    <button class="action" onclick="exportPDF('Missions','mission_table')">PDF officiel</button>
+    <button class="action" onclick="exportPDF('Ordre / État de Mission','mission_table')">PDF officiel</button>
   </div>
-
   <table id="mission_table">
-    <tr>
-      <th>Agent</th>
-      <th>Matricule</th>
-      <th>Destination</th>
-      <th>Dates</th>
-      <th>Type</th>
-    </tr>
+    <tr><th>Agent</th><th>Matricule</th><th>Destination</th><th>Dates</th><th>Type</th></tr>
   </table>
 </section>
 
-<!-- DEMANDES -->
 <section id="demandes">
   <div class="card">
-    <h3>📝 Demandes Administratives</h3>
+    <h3>📝 Gestion des Demandes Administratives</h3>
+    <label>Type de demande</label>
     <select id="d_type">
       <option>Fournitures</option>
       <option>Carburant</option>
       <option>Bon de commande</option>
     </select>
-    <textarea id="d_desc" placeholder="Description de la demande"></textarea>
-
+    <label>Description</label>
+    <textarea id="d_desc"></textarea>
     <button class="action" onclick="addDemande()">Soumettre</button>
-  </div>
 
+    <button class="action" onclick="exportExcel('demande_table')">Exporter Excel</button>
+    <button class="action" onclick="exportPDF('Gestion des demandes','demande_table')">PDF officiel</button>
+  </div>
   <table id="demande_table">
     <tr><th>Type</th><th>Description</th></tr>
   </table>
 </section>
 
 <script>
-/* Navigation */
-function showSection(id){
-  document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
+  function showSection(id) {
+    document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+ function addCRM() {
+  let data = JSON.parse(localStorage.getItem("crm") || "[]");
+  data.push({
+    service: crm_service.value,
+    objet: crm_objet.value,
+    statut: crm_statut.value
+  });
+  localStorage.setItem("crm", JSON.stringify(data));
+  loadCRM();
 }
 
-/* CRM */
-function addCRM(){
-  crm_table.innerHTML += `
-    <tr>
-      <td>${crm_service.value}</td>
-      <td>${crm_objet.value}</td>
-      <td>${crm_statut.value}</td>
-    </tr>`;
+
+  function addMission() {
+  let data = JSON.parse(localStorage.getItem("missions") || "[]");
+  data.push({
+    nom: m_nom.value,
+    matricule: m_matricule.value,
+    dest: m_dest.value,
+    date: m_date.value,
+    type: m_type.value
+  });
+  localStorage.setItem("missions", JSON.stringify(data));
+  loadMissions();
 }
 
-/* Missions */
-function addMission(){
-  mission_table.innerHTML += `
-    <tr>
-      <td>${m_nom.value}</td>
-      <td>${m_matricule.value}</td>
-      <td>${m_dest.value}</td>
-      <td>${m_date.value}</td>
-      <td>${m_type.value}</td>
-    </tr>`;
+
+
+  function addDemande() {
+  let data = JSON.parse(localStorage.getItem("demandes") || "[]");
+  data.push({
+    type: d_type.value,
+    desc: d_desc.value
+  });
+  localStorage.setItem("demandes", JSON.stringify(data));
+  loadDemandes();
 }
 
-/* Demandes */
-function addDemande(){
-  demande_table.innerHTML += `
-    <tr>
-      <td>${d_type.value}</td>
-      <td>${d_desc.value}</td>
-    </tr>`;
+function loadCRM() {
+  let t = crm_table;
+  t.innerHTML = "<tr><th>Service</th><th>Objet</th><th>Statut</th></tr>";
+  JSON.parse(localStorage.getItem("crm") || "[]")
+    .forEach(d => {
+      t.innerHTML += `<tr><td>${d.service}</td><td>${d.objet}</td><td>${d.statut}</td></tr>`;
+    });
 }
 
-/* Export Excel */
-function exportExcel(tableId){
-  let wb = XLSX.utils.book_new();
-  let ws = XLSX.utils.table_to_sheet(document.getElementById(tableId));
-  XLSX.utils.book_append_sheet(wb, ws, "Données");
-  XLSX.writeFile(wb, tableId + ".xlsx");
+function loadMissions() {
+  let t = mission_table;
+  t.innerHTML = "<tr><th>Agent</th><th>Matricule</th><th>Destination</th><th>Dates</th><th>Type</th></tr>";
+  JSON.parse(localStorage.getItem("missions") || "[]")
+    .forEach(d => {
+      t.innerHTML += `<tr><td>${d.nom}</td><td>${d.matricule}</td><td>${d.dest}</td><td>${d.date}</td><td>${d.type}</td></tr>`;
+    });
 }
 
-/* Export PDF officiel */
-function exportPDF(title, tableId){
+function loadDemandes() {
+  let t = demande_table;
+  t.innerHTML = "<tr><th>Type</th><th>Description</th></tr>";
+  JSON.parse(localStorage.getItem("demandes") || "[]")
+    .forEach(d => {
+      t.innerHTML += `<tr><td>${d.type}</td><td>${d.desc}</td></tr>`;
+    });
+}
+
+window.onload = () => {
+  loadCRM();
+  loadMissions();
+  loadDemandes();
+};
+
+
+
+  function exportExcel(tableId){let wb=XLSX.utils.book_new();let ws=XLSX.utils.table_to_sheet(document.getElementById(tableId));XLSX.utils.book_append_sheet(wb,ws,"Données");XLSX.writeFile(wb,tableId+'.xlsx');}
+
+  function exportPDF(title, tableId) {
   const { jsPDF } = window.jspdf;
-  let pdf = new jsPDF("l","mm","a4");
+  let pdf = new jsPDF("p", "mm", "a4");
 
+  /* LOGO */
+  if (typeof logoMAE !== "undefined") {
+    pdf.addImage(logoMAE, "PNG", 10, 8, 25, 25);
+  }
+
+  /* EN-TÊTE */
   pdf.setFontSize(14);
-  pdf.text("MINISTÈRE DES AFFAIRES ÉTRANGÈRES – SÉNÉGAL", 10, 15);
-  pdf.setFontSize(12);
-  pdf.text(title, 10, 25);
+  pdf.text("RÉPUBLIQUE DU SÉNÉGAL", 105, 15, { align: "center" });
+  pdf.setFontSize(11);
+  pdf.text("Ministère des Affaires Étrangères", 105, 22, { align: "center" });
+  pdf.text("———", 105, 26, { align: "center" });
 
-  let y = 35;
-  document.querySelectorAll(`#${tableId} tr`).forEach(row=>{
+  pdf.setFontSize(13);
+  pdf.text(title.toUpperCase(), 105, 36, { align: "center" });
+
+  /* DATE */
+  pdf.setFontSize(9);
+  pdf.text("Édité le : " + new Date().toLocaleDateString(), 150, 42);
+
+  /* TABLE */
+  let y = 50;
+  pdf.setFontSize(10);
+
+  document.querySelectorAll(`#${tableId} tr`).forEach((row, i) => {
     let x = 10;
-    row.querySelectorAll("th,td").forEach(cell=>{
-      pdf.text(cell.innerText, x, y);
-      x += 40;
+    row.querySelectorAll("th, td").forEach(cell => {
+      pdf.rect(x - 1, y - 5, 38, 8); // cadre
+      pdf.text(cell.innerText || "", x, y);
+      x += 38;
     });
     y += 8;
+    if (y > 280) {
+      pdf.addPage();
+      y = 20;
+    }
   });
 
-  pdf.save(title + ".pdf");
+  /* PIED DE PAGE */
+  pdf.setFontSize(8);
+  pdf.text(
+    "Document interne – MAE Sénégal",
+    105,
+    290,
+    { align: "center" }
+  );
+
+  pdf.save(title.replace(/\s+/g, "_") + ".pdf");
 }
+
+  function updateStats(){stat_crm.innerText="Nombre total de demandes CRM : "+(crm_table.rows.length-1);stat_mission.innerText="Nombre total de missions : "+(mission_table.rows.length-1);stat_demande.innerText="Nombre total de demande : "+(demande_table.rows.length-1);}
 </script>
 
 </body>
