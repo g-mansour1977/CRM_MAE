@@ -27,6 +27,7 @@
 <header>
   <h2>Mini Prototype – MAE Sénégal</h2>
   <p>CRM interne & Gestion des Missions (Démo)</p>
+
 </header>
 
 <nav>
@@ -51,7 +52,18 @@
     <button class="action" onclick="addCRM()">Enregistrer</button>
     <button class="action" onclick="exportExcel('crm_table')">Exporter Excel</button>
     <button class="action" onclick="exportPDF('CRM Interne','crm_table')">PDF officiel</button>
+
+
+    <button class="action" onclick="clearModule('crm')" style="background:#e55039">
+🗑️ Vider CRM (Admin)
+</button>
+
+    <button class="action" onclick="clearAllData()" style="background:#b71540">
+🧹 Réinitialisation compléte (Admin)
+</button>
+
   </div>
+
   <table id="crm_table">
     <tr><th>Service</th><th>Objet</th><th>Statut</th></tr>
   </table>
@@ -76,10 +88,26 @@
     <button class="action" onclick="addMission()">Ajouter Mission</button>
     <button class="action" onclick="exportExcel('mission_table')">Exporter Excel</button>
     <button class="action" onclick="exportPDF('Ordre / État de Mission','mission_table')">PDF officiel</button>
+
+    <button class="action"
+  onclick="clearModule('missions')"
+  style="background:#e55039">
+🗑️ Vider les missions (Admin)
+</button>
+
   </div>
+
   <table id="mission_table">
-    <tr><th>Agent</th><th>Matricule</th><th>Destination</th><th>Dates</th><th>Type</th></tr>
-  </table>
+  <tr>
+    <th>Agent</th>
+    <th>Matricule</th>
+    <th>Destination</th>
+    <th>Dates</th>
+    <th>Type</th>
+    <th>Actions</th>
+  </tr>
+</table>
+
 </section>
 
 <section id="demandes">
@@ -97,13 +125,41 @@
 
     <button class="action" onclick="exportExcel('demande_table')">Exporter Excel</button>
     <button class="action" onclick="exportPDF('Gestion des demandes','demande_table')">PDF officiel</button>
+
+    <button class="action"
+  onclick="clearModule('demandes')"
+  style="background:#e55039">
+🗑️ Vider les demandes (Admin)
+</button>
+
   </div>
+
   <table id="demande_table">
-    <tr><th>Type</th><th>Description</th></tr>
-  </table>
+  <tr>
+    <th>Type</th>
+    <th>Description</th>
+    <th>Actions</th>
+  </tr>
+</table>
+
 </section>
 
+
 <script>
+const ADMIN_PASSWORD = "MAE2026";
+
+function checkAdmin() {
+  const pwd = prompt("🔐 Accès administrateur requis");
+  if (pwd !== ADMIN_PASSWORD) {
+    alert("⛔ Mot de passe incorrect");
+    return false;
+  }
+  return true;
+}
+
+
+
+
   function showSection(id) {
     document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
@@ -151,27 +207,131 @@ function loadCRM() {
   t.innerHTML = "<tr><th>Service</th><th>Objet</th><th>Statut</th></tr>";
   JSON.parse(localStorage.getItem("crm") || "[]")
     .forEach(d => {
-      t.innerHTML += `<tr><td>${d.service}</td><td>${d.objet}</td><td>${d.statut}</td></tr>`;
+     
+      t.innerHTML += `
+<tr>
+  <td>${d.service}</td>
+  <td>${d.objet}</td>
+  <td>${d.statut}</td>
+</tr>`;
+
     });
 }
+
+function deleteMission(index) {
+  if (!checkAdmin()) return;
+  if (!confirm("Supprimer cette mission ?")) return;
+
+  let data = JSON.parse(localStorage.getItem("missions") || "[]");
+  data.splice(index, 1);
+  localStorage.setItem("missions", JSON.stringify(data));
+
+  // ✅ NETTOYAGE DES CHAMPS
+  m_nom.value = "";
+  m_matricule.value = "";
+  m_dest.value = "";
+  m_date.value = "";
+  m_type.selectedIndex = 0;
+
+  loadMissions();
+  setTimeout(() => window.location.reload(), 300);
+
+}
+
+
 
 function loadMissions() {
-  let t = mission_table;
-  t.innerHTML = "<tr><th>Agent</th><th>Matricule</th><th>Destination</th><th>Dates</th><th>Type</th></tr>";
-  JSON.parse(localStorage.getItem("missions") || "[]")
-    .forEach(d => {
-      t.innerHTML += `<tr><td>${d.nom}</td><td>${d.matricule}</td><td>${d.dest}</td><td>${d.date}</td><td>${d.type}</td></tr>`;
-    });
+  const t = document.getElementById("mission_table");
+
+  // 🔥 RESET TOTAL DU TABLEAU
+  t.innerHTML = "";
+
+  // 🔹 ENTÊTE
+  t.insertAdjacentHTML("beforeend", `
+    <tr>
+      <th>Agent</th>
+      <th>Matricule</th>
+      <th>Destination</th>
+      <th>Dates</th>
+      <th>Type</th>
+      <th>Actions</th>
+    </tr>
+  `);
+
+  const data = JSON.parse(localStorage.getItem("missions") || "[]");
+
+  data.forEach((d, i) => {
+    t.insertAdjacentHTML("beforeend", `
+      <tr>
+        <td>${d.nom}</td>
+        <td>${d.matricule}</td>
+        <td>${d.dest}</td>
+        <td>${d.date}</td>
+        <td>${d.type}</td>
+        <td>
+          <button onclick="deleteMission(${i})"
+            style="background:#e55039;color:#fff;border:none;padding:5px;border-radius:4px">
+            🗑️
+          </button>
+        </td>
+      </tr>
+    `);
+  });
 }
 
-function loadDemandes() {
-  let t = demande_table;
-  t.innerHTML = "<tr><th>Type</th><th>Description</th></tr>";
-  JSON.parse(localStorage.getItem("demandes") || "[]")
-    .forEach(d => {
-      t.innerHTML += `<tr><td>${d.type}</td><td>${d.desc}</td></tr>`;
-    });
+
+function deleteDemande(index) {
+  if (!checkAdmin()) return;
+  if (!confirm("Supprimer cette demande ?")) return;
+
+  let data = JSON.parse(localStorage.getItem("demandes") || "[]");
+  data.splice(index, 1);
+  localStorage.setItem("demandes", JSON.stringify(data));
+
+  // ✅ NETTOYAGE
+  d_type.selectedIndex = 0;
+  d_desc.value = "";
+
+  loadDemandes();
+  setTimeout(() => window.location.reload(), 300);
+
 }
+
+
+function loadDemandes() {
+  const t = document.getElementById("demande_table");
+
+  // 🔥 RESET TOTAL
+  t.innerHTML = "";
+
+  // 🔹 ENTÊTE
+  t.insertAdjacentHTML("beforeend", `
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Actions</th>
+    </tr>
+  `);
+
+  const data = JSON.parse(localStorage.getItem("demandes") || "[]");
+
+  data.forEach((d, i) => {
+    t.insertAdjacentHTML("beforeend", `
+      <tr>
+        <td>${d.type}</td>
+        <td>${d.desc}</td>
+        <td>
+          <button onclick="deleteDemande(${i})"
+            style="background:#e55039;color:#fff;border:none;padding:5px;border-radius:4px">
+            🗑️
+          </button>
+        </td>
+      </tr>
+    `);
+  });
+}
+
+
 
 window.onload = () => {
   loadCRM();
@@ -237,6 +397,37 @@ window.onload = () => {
 }
 
   function updateStats(){stat_crm.innerText="Nombre total de demandes CRM : "+(crm_table.rows.length-1);stat_mission.innerText="Nombre total de missions : "+(mission_table.rows.length-1);stat_demande.innerText="Nombre total de demande : "+(demande_table.rows.length-1);}
+
+  
+  function clearModule(module) {
+  if (!checkAdmin()) return;
+
+  if (!confirm("⚠️ Supprimer définitivement les données du module : " + module + " ?")) return;
+
+  localStorage.removeItem(module);
+
+  if (module === "crm") loadCRM();
+  if (module === "missions") loadMissions();
+  if (module === "demandes") loadDemandes();
+
+  alert("✅ Données supprimées (accès administrateur validé).");
+}
+
+
+
+function clearAllData() {
+  if (!checkAdmin()) return;
+
+  if (!confirm("⚠️ ACTION CRITIQUE\nToutes les données seront supprimées.\nContinuer ?")) return;
+
+  localStorage.clear();
+  loadCRM();
+  loadMissions();
+  loadDemandes();
+
+  alert("✅ Système réinitialisé par l’administrateur.");
+}
+
 </script>
 
 </body>
