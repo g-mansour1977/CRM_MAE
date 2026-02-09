@@ -34,6 +34,8 @@
   <button onclick="showSection('crm')">CRM Interne</button>
   <button onclick="showSection('missions')">Gestion des Missions</button>
   <button onclick="showSection('demandes')">Gestion des Demandes</button>
+  <button onclick="showSection('stats')">📊 Tableau de bord</button>
+
 </nav>
 
 <section id="crm" class="active">
@@ -144,6 +146,16 @@
 
 </section>
 
+<section id="stats">
+  <div class="card">
+    <h3>📊 Tableau de bord</h3>
+    <p id="stat_crm">Nombre total de demandes CRM : 0</p>
+    <p id="stat_mission">Nombre total de missions : 0</p>
+    <p id="stat_demande">Nombre total de demandes administratives : 0</p>
+  </div>
+</section>
+
+
 
 <script>
 const ADMIN_PASSWORD = "MAE2026";
@@ -174,6 +186,7 @@ function checkAdmin() {
   });
   localStorage.setItem("crm", JSON.stringify(data));
   loadCRM();
+  updateStats();
 }
 
 
@@ -188,6 +201,7 @@ function checkAdmin() {
   });
   localStorage.setItem("missions", JSON.stringify(data));
   loadMissions();
+   updateStats();
 }
 
 
@@ -200,6 +214,7 @@ function checkAdmin() {
   });
   localStorage.setItem("demandes", JSON.stringify(data));
   loadDemandes();
+   updateStats();
 }
 
 function loadCRM() {
@@ -235,6 +250,7 @@ function deleteMission(index) {
 
   loadMissions();
   setTimeout(() => window.location.reload(), 300);
+updateStats();
 
 }
 
@@ -294,6 +310,7 @@ function deleteDemande(index) {
 
   loadDemandes();
   setTimeout(() => window.location.reload(), 300);
+  updateStats();
 
 }
 
@@ -337,6 +354,7 @@ window.onload = () => {
   loadCRM();
   loadMissions();
   loadDemandes();
+  updateStats();
 };
 
 
@@ -396,7 +414,21 @@ window.onload = () => {
   pdf.save(title.replace(/\s+/g, "_") + ".pdf");
 }
 
-  function updateStats(){stat_crm.innerText="Nombre total de demandes CRM : "+(crm_table.rows.length-1);stat_mission.innerText="Nombre total de missions : "+(mission_table.rows.length-1);stat_demande.innerText="Nombre total de demande : "+(demande_table.rows.length-1);}
+  function updateStats() {
+  const crm = JSON.parse(localStorage.getItem("crm") || "[]");
+  const missions = JSON.parse(localStorage.getItem("missions") || "[]");
+  const demandes = JSON.parse(localStorage.getItem("demandes") || "[]");
+
+  document.getElementById("stat_crm").innerText =
+    "Nombre total de demandes CRM : " + crm.length;
+
+  document.getElementById("stat_mission").innerText =
+    "Nombre total de missions : " + missions.length;
+
+  document.getElementById("stat_demande").innerText =
+    "Nombre total de demandes administratives : " + demandes.length;
+}
+
 
   
   function clearModule(module) {
@@ -411,6 +443,7 @@ window.onload = () => {
   if (module === "demandes") loadDemandes();
 
   alert("✅ Données supprimées (accès administrateur validé).");
+  updateStats();
 }
 
 
@@ -426,6 +459,7 @@ function clearAllData() {
   loadDemandes();
 
   alert("✅ Système réinitialisé par l’administrateur.");
+  updateStats();
 }
 
 </script>
