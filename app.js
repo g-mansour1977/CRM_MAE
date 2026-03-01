@@ -14,7 +14,7 @@ async function addMission() {
 }
 
 async function loadMissions() {
-  const res = await fetch("http://127.0.0.1:5000/missions");
+  const res = await fetch("/missions");
   const data = await res.json();
   // afficher tableau
 
@@ -39,3 +39,4 @@ async function checkAdmin() {
 
 
 }
+
